@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Retatrutide Kalkulator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+
+  :root {
+    --bg: #0a0c10;
+    --s1: #111318;
+    --s2: #181b22;
+    --border: #252932;
+    --acc: #7c6af7;
+    --acc2: #a78bfa;
+    --green: #4ade80;
+    --text: #e2e8f0;
+    --muted: #4b5563;
+    --mono: 'DM Mono', monospace;
+    --head: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+  }
+
+  .card {
+    background: var(--s1);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 380px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(124,106,247,0.08);
+  }
+
+  .card-header {
+    padding: 24px 24px 20px;
+    background: linear-gradient(135deg, rgba(124,106,247,0.12), rgba(124,106,247,0.03));
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(124,106,247,0.15);
+    border: 1px solid rgba(124,106,247,0.25);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 10px;
+    color: var(--acc2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pill::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--acc2);
+  }
+
+  h1 {
+    font-family: var(--head);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .conc-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .conc-badge {
+    background: var(--s2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: var(--acc2);
+    font-weight: 500;
+  }
+
+  .card-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+  .input-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .input-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    background: var(--s2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .input-row:focus-within {
+    border-color: var(--acc);
+    box-shadow: 0 0 0 3px rgba(124,106,247,0.12);
+  }
+  .input-row input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    width: 100%;
+    -webkit-appearance: none;
+  }
+  .input-row input:focus { outline: none; }
+  .input-row input::placeholder { color: var(--muted); font-size: 24px; }
+  .input-unit {
+    padding: 0 18px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .quick-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: -8px;
+  }
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .quick-btn {
+    background: var(--s2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    -webkit-appearance: none;
+  }
+  .quick-btn:active, .quick-btn.active {
+    background: rgba(124,106,247,0.15);
+    border-color: var(--acc);
+    color: var(--acc2);
+  }
+  .quick-sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+  .result-box {
+    background: var(--s2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.25s;
+  }
+  .result-box.has-result {
+    border-color: rgba(74,222,128,0.3);
+    background: rgba(74,222,128,0.04);
+  }
+  .result-empty { color: var(--muted); font-size: 12px; letter-spacing: 0.06em; }
+  .result-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .result-value {
+    font-family: var(--head);
+    font-size: 52px;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .result-unit { font-size: 18px; color: var(--acc2); font-family: var(--mono); font-weight: 500; }
+  .result-check { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .result-check strong { color: var(--text); }
+
+  .warning {
+    display: none;
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 11px;
+    color: #fbbf24;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .warning.visible { display: block; }
+
+  .footer-note { text-align: center; font-size: 9px; color: var(--muted); line-height: 1.6; padding-bottom: 4px; }
+
+  @keyframes pop {
+    0% { transform: scale(0.96); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .result-box.has-result { animation: pop 0.2s ease; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="pill">Dosierungsrechner</div>
+    <h1>Retatrutide</h1>
+    <div class="conc-info">
+      Konzentration
+      <span class="conc-badge">3,57 mg/ml</span>
+      <span style="font-size:10px">(10 mg / 2,8 ml)</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="input-wrap">
+      <div class="input-label">Dosis eingeben</div>
+      <div class="input-row">
+        <input type="number" id="dosis" placeholder="0" min="0.5" max="12" step="0.5" inputmode="decimal" oninput="calculate()">
+        <span class="input-unit">mg</span>
+      </div>
+    </div>
+    <div class="quick-label">Schnellauswahl</div>
+    <div class="quick-grid">
+      <button class="quick-btn" onclick="setDose(2,this)">2<div class="quick-sub">mg</div></button>
+      <button class="quick-btn" onclick="setDose(4,this)">4<div class="quick-sub">mg</div></button>
+      <button class="quick-btn" onclick="setDose(6,this)">6<div class="quick-sub">mg</div></button>
+      <button class="quick-btn" onclick="setDose(8,this)">8<div class="quick-sub">mg</div></button>
+      <button class="quick-btn" onclick="setDose(10,this)">10<div class="quick-sub">mg</div></button>
+      <button class="quick-btn" onclick="setDose(12,this)">12<div class="quick-sub">mg</div></button>
+      <button class="quick-btn" onclick="setDose(3,this)">3<div class="quick-sub">mg</div></button>
+      <button class="quick-btn" onclick="setDose(5,this)">5<div class="quick-sub">mg</div></button>
+    </div>
+    <div class="result-box" id="resultBox">
+      <span class="result-empty">← Dosis eingeben</span>
+    </div>
+    <div class="warning" id="warning">
+      ⚠️ Dosis überschreitet verfügbare Menge<br>
+      <strong>Max. 2,8 ml (10 mg) pro Fläschchen</strong>
+    </div>
+    <div class="footer-note">Nur zur persönlichen Orientierung.<br>Immer mit dem Arzt absprechen.</div>
+  </div>
+</div>
+<script>
+  const CONC = 10 / 2.8;
+  const MAX_ML = 2.8;
+
+  function setDose(val, btn) {
+    document.getElementById('dosis').value = val;
+    document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    calculate();
+  }
+
+  function calculate() {
+    const dosis = parseFloat(document.getElementById('dosis').value);
+    const box = document.getElementById('resultBox');
+    const warn = document.getElementById('warning');
+
+    if (!dosis || dosis <= 0) {
+      box.className = 'result-box';
+      box.innerHTML = '<span class="result-empty">← Dosis eingeben</span>';
+      warn.classList.remove('visible');
+      return;
+    }
+
+    const ml = dosis / CONC;
+    const mlRound = Math.round(ml * 100) / 100;
+
+    if (ml > MAX_ML) {
+      box.className = 'result-box';
+      box.innerHTML = '<span class="result-empty" style="color:#f87171">Dosis zu hoch</span>';
+      warn.classList.add('visible');
+      return;
+    }
+
+    warn.classList.remove('visible');
+    box.className = 'result-box has-result';
+    box.innerHTML = `
+      <div class="result-label">Aufziehen</div>
+      <div><span class="result-value">${mlRound.toFixed(2).replace('.', ',')}</span><span class="result-unit"> ml</span></div>
+      <div class="result-check"><strong>${dosis} mg</strong> ÷ 3,57 mg/ml = ${mlRound.toFixed(3).replace('.', ',')} ml</div>
+    `;
+  }
+</script>
+</body>
+</html>
